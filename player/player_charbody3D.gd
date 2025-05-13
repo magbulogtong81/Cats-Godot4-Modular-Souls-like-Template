@@ -184,6 +184,9 @@ func _physics_process(_delta):
 	fall_check()
 	
 func _input(_event:InputEvent):
+	mouse_mode_toggle(_event)
+	
+	
 		# Update current orientation to camera when nothing pressed
 	if !Input.is_anything_pressed():
 		current_camera = get_viewport().get_camera_3d()
@@ -257,6 +260,17 @@ func _input(_event:InputEvent):
 	if _event.is_action_released("use_gadget_light"):
 		if not secondary_action:
 			end_guard()
+
+
+func mouse_mode_toggle(event:InputEvent) -> void:
+	#moue mode toggle
+	if Input.is_action_just_pressed("mouse_toggle"):
+		if Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED:
+			Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+		else:
+			Input.set_mouse_mode(Input.MOUSE_MODE_CAPTURED)
+
+
 
 func apply_gravity(_delta):
 	if !is_on_floor() \
