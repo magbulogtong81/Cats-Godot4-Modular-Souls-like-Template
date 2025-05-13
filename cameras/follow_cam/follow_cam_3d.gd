@@ -19,6 +19,7 @@ class_name FollowCam
 
 @export_range(1,50,1) var mouse_sensitivity = 15.0
 @export_range(1,50,1) var joystick_sensitivity = 15.0
+@export_range(1,80,1) var touchscreen_sensitivity = 50
 
 var targeting = false
 signal targeting_changed
@@ -36,6 +37,7 @@ signal target_cleared
 
 var current_cam_buffer = true
 
+var is_in_touchzone := false ## for touchscreens
 
 func _ready():
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
@@ -64,8 +66,16 @@ func _physics_process(_delta):
 	
 ## Normal free camera control
 func mouse_control(_event):
+	#detect if touch position is on right side of the screen
+	#necessary for joystick to not control camera
+	if _event is InputEventScreenTouch:
+		is_in_touchzone = _event.get_position() >= (DisplayServer.screen_get_size() / 2.0)
+		
+		#only apply touchscreen multiplier if touchscreen is used
+		mouse_sensitivity = touchscreen_sensitivity
+		
 
-	if _event is InputEventMouseMotion:
+	if _event is InputEventMouseMotion and Input.get_mouse_mode() == Input.MOUSE_MODE_CAPTURED or _event is InputEventScreenDrag and is_in_touchzone:
 		var new_rotation = rotation.x - _event.relative.y / 10000 * mouse_sensitivity
 		rotation.y -= _event.relative.x /  10000 * mouse_sensitivity
 
